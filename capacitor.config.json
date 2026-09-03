@@ -1,0 +1,13 @@
+{
+  "appId": "com.aiko.dms",
+  "appName": "AIKO",
+  "webDir": "www",
+  "server": {
+    "url": "https://aiko.aiko18106.workers.dev",
+    "androidScheme": "https",
+    "cleartext": false
+  },
+  "android": {
+    "allowMixedContent": false
+  }
+}
