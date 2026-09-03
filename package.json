@@ -1,0 +1,19 @@
+{
+  "name": "aiko-dms-android",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vỏ app Android (Capacitor) cho AIKO DMS — bọc web app + định vị nền",
+  "scripts": {
+    "add-android": "npx cap add android",
+    "sync": "npx cap sync android",
+    "open": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/core": "^6.1.2",
+    "@capacitor/android": "^6.1.2",
+    "@capacitor-community/background-geolocation": "^1.2.20"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.2"
+  }
+}
