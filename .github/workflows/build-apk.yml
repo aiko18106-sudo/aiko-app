@@ -1,0 +1,53 @@
+name: Build AIKO APK
+
+# Bấm chạy tay từ tab Actions trên GitHub
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lấy mã nguồn
+        uses: actions/checkout@v4
+
+      - name: Cài Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Cài Java (JDK 17)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Cài Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Cài thư viện
+        run: npm install
+
+      - name: Tạo project Android
+        run: npx cap add android
+
+      - name: Thêm quyền định vị nền
+        run: node patch-android.js
+
+      - name: Giải mã khóa ký (từ Secret)
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/aiko-release.keystore
+
+      - name: Build & ký APK (release)
+        working-directory: android
+        run: |
+          ./gradlew assembleRelease \
+            -Pandroid.injected.signing.store.file=aiko-release.keystore \
+            -Pandroid.injected.signing.store.password=${{ secrets.KEYSTORE_PASS }} \
+            -Pandroid.injected.signing.key.alias=aiko \
+            -Pandroid.injected.signing.key.password=${{ secrets.KEYSTORE_PASS }}
+
+      - name: Tải file APK về (Artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: AIKO-APK
+          path: android/app/build/outputs/apk/release/*.apk
