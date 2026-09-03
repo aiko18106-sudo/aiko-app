@@ -1,6 +1,6 @@
 name: Build AIKO APK
 
-# Bấm chạy tay từ tab Actions trên GitHub
+# Bam chay tay tu tab Actions tren GitHub
 on:
   workflow_dispatch:
 
@@ -8,45 +8,45 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Lấy mã nguồn
+      - name: Lay ma nguon
         uses: actions/checkout@v4
 
-      - name: Cài Node
+      - name: Cai Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Cài Java (JDK 17)
+      - name: Cai Java (JDK 17)
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Cài Android SDK
+      - name: Cai Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Cài thư viện
+      - name: Cai thu vien
         run: npm install
 
-      - name: Tạo project Android
+      - name: Tao project Android
         run: npx cap add android
 
-      - name: Thêm quyền định vị nền
+      - name: Them quyen dinh vi nen
         run: node patch-android.js
 
-      - name: Giải mã khóa ký (từ Secret)
-        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/aiko-release.keystore
+      - name: Giai ma khoa ky (tu Secret)
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > "$GITHUB_WORKSPACE/android/app/aiko-release.keystore"
 
-      - name: Build & ký APK (release)
+      - name: Build va ky APK (release)
         working-directory: android
         run: |
           ./gradlew assembleRelease \
-            -Pandroid.injected.signing.store.file=aiko-release.keystore \
+            -Pandroid.injected.signing.store.file="$GITHUB_WORKSPACE/android/app/aiko-release.keystore" \
             -Pandroid.injected.signing.store.password=${{ secrets.KEYSTORE_PASS }} \
             -Pandroid.injected.signing.key.alias=aiko \
             -Pandroid.injected.signing.key.password=${{ secrets.KEYSTORE_PASS }}
 
-      - name: Tải file APK về (Artifact)
+      - name: Tai file APK ve (Artifact)
         uses: actions/upload-artifact@v4
         with:
           name: AIKO-APK
